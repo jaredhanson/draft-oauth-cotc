@@ -17,13 +17,36 @@
     </author>
     <date/>
     <abstract>
-      <t>This specification...</t>
+      <t>
+        This document describes a mechanism that allows an HTTP service to
+        confirm the binding of a security token to a user agent.
+      </t>
     </abstract>
   </front>
   <middle>
   
     <section title="Introduction">
-      
+      <t>
+        This document describes a mechanism that allows an HTTP service to
+        confirm the binding of a security token to a user agent.
+      </t>
+      <t>
+        Such binding is useful in federated scenarios.  An identity provider may
+        send an IdP-initiated login request to a relying party by transmitting
+        a security token identifying the user to be logged in via HTTP
+        redirection.  When the identity provider and relying party are on
+        separate domains, it is impossible to bind the security token to a
+        session using HTTP state management mechanisms such as cookies.  A
+        token left unbound in this manner can be used exfiltrated from the user
+        agent to which is was issued, and replayed in a different user agent,
+        leaving such flows vulnerable to cross-site request forgery.
+      </t>
+      <t>
+        This specification defines a mechanism to bind a security token to the
+        web origin from which it was issued, and subsequently confirm with the
+        issuing web origin that the security token is being presented to an HTTP
+        service from the same user agent to which it was issued.
+      </t>
     </section>
     
   </middle>

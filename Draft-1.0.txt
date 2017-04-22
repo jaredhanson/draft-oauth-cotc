@@ -4,7 +4,7 @@
 
 Network Working Group                                          J. Hanson
 Internet-Draft                                                Auth0 Inc.
-Expires: October 22, 2017                                 April 20, 2017
+Expires: October 23, 2017                                 April 21, 2017
 
 
                OAuth 2.0 Cross-Origin Token Confirmation
@@ -12,7 +12,8 @@ Expires: October 22, 2017                                 April 20, 2017
 
 Abstract
 
-   This specification...
+   This document describes a mechanism that allows an HTTP service to
+   confirm the binding of a security token to a user agent.
 
 Status of This Memo
 
@@ -29,7 +30,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 22, 2017.
+   This Internet-Draft will expire on October 23, 2017.
 
 Copyright Notice
 
@@ -52,13 +53,31 @@ Copyright Notice
 
 
 
-
-Hanson                  Expires October 22, 2017                [Page 1]
+Hanson                  Expires October 23, 2017                [Page 1]
 
 Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
 
 
 1.  Introduction
+
+   This document describes a mechanism that allows an HTTP service to
+   confirm the binding of a security token to a user agent.
+
+   Such binding is useful in federated scenarios.  An identity provider
+   may send an IdP-initiated login request to a relying party by
+   transmitting a security token identifying the user to be logged in
+   via HTTP redirection.  When the identity provider and relying party
+   are on separate domains, it is impossible to bind the security token
+   to a session using HTTP state management mechanisms such as cookies.
+   A token left unbound in this manner can be used exfiltrated from the
+   user agent to which is was issued, and replayed in a different user
+   agent, leaving such flows vulnerable to cross-site request forgery.
+
+   This specification defines a mechanism to bind a security token to
+   the web origin from which it was issued, and subsequently confirm
+   with the issuing web origin that the security token is being
+   presented to an HTTP service from the same user agent to which it was
+   issued.
 
 2.  Normative References
 
@@ -82,6 +101,18 @@ Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
               discovery-05 (work in progress), January 2017.
 
 Author's Address
+
+
+
+
+
+
+
+
+Hanson                  Expires October 23, 2017                [Page 2]
+
+Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
+
 
    Jared Hanson
    Auth0 Inc.
@@ -109,4 +140,29 @@ Author's Address
 
 
 
-Hanson                  Expires October 22, 2017                [Page 2]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hanson                  Expires October 23, 2017                [Page 3]
