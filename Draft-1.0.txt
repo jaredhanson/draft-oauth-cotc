@@ -119,18 +119,62 @@ Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
    element in the cnf (confirmation) claim:
 
    {
-      "iss": "https://server.example.com",
-      "sub": "0f6LkoE3KsPyxQ",
-      "aud": "0d8f597e-bc45-46b2-97cf-043c88aa5ecc",
-      "iat": 1467151051,
-      "exp": 1467151651,
-      "nonce": "1KjVsFnQRd4V2XC6",
-      "cnf":{
-        "coi": "53cc28d9-10b0-4e47-b802-6b40fe93adad"
-       }
+     "iss": "https://server.example.com",
+     "sub": "0f6LkoE3KsPyxQ",
+     "aud": "0d8f597e-bc45-46b2-97cf-043c88aa5ecc",
+     "iat": 1467151051,
+     "exp": 1467151651,
+     "nonce": "1KjVsFnQRd4V2XC6",
+     "cnf":{
+       "coi": "53cc28d9-10b0-4e47-b802-6b40fe93adad"
+     }
    }
 
-3.  Normative References
+3.  Token Confirmation Protocol
+
+   The goal of cross-origin token confirmation is to confirm that the
+   User Agent presenting the security token is the same User Agent to
+   which the security token was issued.  Upon receiving a security
+   token, the Relying Party (called the Token Consumer in this document)
+   obtains the verifier from the Identity Provider (called the Token
+   Provider in this document) via the User Agent using HTML5 Web
+   Messaging.  The Token Consumer then confirms that the verifier
+   matches that in the security token.  If so, the token was issued by
+   the Token Provider to the presenting User Agent.
+
+   The sequence of events is as follows:
+
+   o  The Token Provider issues a security token to the User Agent.
+
+   o  The User Agent presents the security token to the Token Consumer.
+
+   o  The Token Consumer renders a page an invisible iframe from the
+      Token Provider's cross-origin verification iframe endpoint.
+
+   o  The page rendered by the Relying Party posts a message to the
+      Identity Provider's cross-origin verification iframe requesting
+      the verifier.
+
+   o  The Identity Provider's cross-origin verification iframe posts a
+      message to the Relying Party page which contains the verifier.
+
+   o  The Relying Party submits the verifier to its confirmation
+      endpoint.
+
+
+
+
+
+Hanson                  Expires October 27, 2017                [Page 3]
+
+Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
+
+
+   o  The Relying Party confirms the verifier, and if confirmed
+      continues processing the operation requested using the security
+      token.
+
+4.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -158,55 +202,11 @@ Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
 
 Author's Address
 
-
-
-
-
-
-
-
-Hanson                  Expires October 27, 2017                [Page 3]
-
-Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
-
-
    Jared Hanson
    Auth0 Inc.
 
    Email: jaredhanson@gmail.com
    URI:   http://www.jaredhanson.net/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

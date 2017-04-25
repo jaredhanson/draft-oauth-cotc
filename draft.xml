@@ -78,18 +78,65 @@
         </preamble>
         <artwork><![CDATA[
 {
-   "iss": "https://server.example.com",
-   "sub": "0f6LkoE3KsPyxQ",
-   "aud": "0d8f597e-bc45-46b2-97cf-043c88aa5ecc",
-   "iat": 1467151051,
-   "exp": 1467151651,
-   "nonce": "1KjVsFnQRd4V2XC6",
-   "cnf":{
-     "coi": "53cc28d9-10b0-4e47-b802-6b40fe93adad"
-    }
+  "iss": "https://server.example.com",
+  "sub": "0f6LkoE3KsPyxQ",
+  "aud": "0d8f597e-bc45-46b2-97cf-043c88aa5ecc",
+  "iat": 1467151051,
+  "exp": 1467151651,
+  "nonce": "1KjVsFnQRd4V2XC6",
+  "cnf":{
+    "coi": "53cc28d9-10b0-4e47-b802-6b40fe93adad"
+  }
 }
 ]]></artwork>
       </figure>
+    </section>
+    
+    <section title="Token Confirmation Protocol">
+      <t>
+        The goal of cross-origin token confirmation is to confirm that the
+        User Agent presenting the security token is the same User Agent to which
+        the security token was issued.  Upon receiving a security token, the
+        Relying Party (called the Token Consumer in this document) obtains the
+        verifier from the Identity Provider (called the Token Provider in this
+        document) via the User Agent using HTML5 Web Messaging.  The Token
+        Consumer then confirms that the verifier matches that in the security
+        token.  If so, the token was issued by the Token Provider to the
+        presenting User Agent.
+      </t>
+      <t>
+        The sequence of events is as follows:
+        
+        <list style="symbols">
+          <t>
+            The Token Provider issues a security token to the User Agent.
+          </t>
+          <t>
+            The User Agent presents the security token to the Token Consumer.
+          </t>
+          <t>
+            The Token Consumer renders a page an invisible iframe from the
+            Token Provider's cross-origin verification iframe endpoint.
+          </t>
+          <t>
+            The page rendered by the Relying Party posts a message to the
+            Identity Provider's cross-origin verification iframe requesting
+            the verifier.
+          </t>
+          <t>
+            The Identity Provider's cross-origin verification iframe posts a
+            message to the Relying Party page which contains the verifier.
+          </t>
+          <t>
+            The Relying Party submits the verifier to its confirmation endpoint.
+          </t>
+          <t>
+            The Relying Party confirms the verifier, and if confirmed continues
+            processing the operation requested using the security token.
+          </t>
+        </list>
+      </t>
+      
     </section>
     
   </middle>
