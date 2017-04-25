@@ -18,8 +18,12 @@
     <date/>
     <abstract>
       <t>
-        This document describes a mechanism that allows an HTTP service to
-        confirm the binding of a security token to a user agent.
+        This specification describes how to declare in a JWT that the presenter
+        of a JWT is a User Agent through which a verifier can be obtained.  It
+        further specifies how the reciever can obtain the verifier and confirm
+        that the User Agent is authorized to present the security token.
+        Confirmation in this manner protects these tokens from token export
+        attacks.
       </t>
     </abstract>
   </front>
@@ -27,25 +31,33 @@
   
     <section title="Introduction">
       <t>
-        This document describes a mechanism that allows an HTTP service to
-        confirm the binding of a security token to a user agent.
+        This specification describes how to declare in a JWT that the presenter
+        of a JWT is a User Agent through which a verifier can be obtained.  It
+        further specifies how the reciever can obtain the verifier and confirm
+        that the User Agent is authorized to present the security token.
+        Confirmation in this manner protects these tokens from token export
+        attacks.
       </t>
       <t>
-        Such binding is useful in federated scenarios.  An identity provider may
-        send an IdP-initiated login request to a relying party by transmitting
-        a security token identifying the user to be logged in via HTTP
-        redirection.  When the identity provider and relying party are on
-        separate domains, it is impossible to bind the security token to a
-        session using HTTP state management mechanisms such as cookies.  A
-        token left unbound in this manner can be used exfiltrated from the user
-        agent to which is was issued, and replayed in a different user agent,
-        leaving such flows vulnerable to cross-site request forgery.
+        Token confirmation improves security in federated scenarios, and in
+        particular federated scenarios that start Identity Provider.  In an
+        IdP-initiated Federated Sign-On protocol, an Identity Provider issues
+        an identity token to a User Agent, which sends the identity token to a
+        Relying Party to authenticate itself.  Examples of this include OpenID
+        Connect (where the identity token is called "ID Token") and SAML (where
+        the identity token is a SAML assertion).
       </t>
       <t>
-        This specification defines a mechanism to bind a security token to the
-        web origin from which it was issued, and subsequently confirm with the
-        issuing web origin that the security token is being presented to an HTTP
-        service from the same user agent to which it was issued.
+        In such an IdP-initiated flow, the identity token is a bearer token and
+        can be used by any User Agent in posession of the token.  Bearer tokens
+        can be exported from the User Agent and replayed in a different User
+        Agent, leaving such flows vulnerable to cross-site request forgery.
+      </t>
+      <t>
+        This specification allows the issuer of a security token to indicate
+        that a verifier is obtainable via the User Agent to which the token was
+        issued.  The Relying Party can confirm this verifier via the User Agent,
+        thereby protecting against token export attacks.
       </t>
     </section>
     
