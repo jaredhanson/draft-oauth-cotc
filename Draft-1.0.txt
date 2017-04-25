@@ -68,12 +68,12 @@ Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
    from token export attacks.
 
    Token confirmation improves security in federated scenarios, and in
-   particular federated scenarios that start Identity Provider.  In an
-   IdP-initiated Federated Sign-On protocol, an Identity Provider issues
-   an identity token to a User Agent, which sends the identity token to
-   a Relying Party to authenticate itself.  Examples of this include
-   OpenID Connect (where the identity token is called "ID Token") and
-   SAML (where the identity token is a SAML assertion).
+   particular federated scenarios that start at the Identity Provider.
+   In an IdP-initiated Federated Sign-On protocol, an Identity Provider
+   issues an identity token to a User Agent, which sends the identity
+   token to a Relying Party to authenticate itself.  Examples of this
+   include OpenID Connect (where the identity token is called "ID
+   Token") and SAML (where the identity token is a SAML assertion).
 
    In such an IdP-initiated flow, the identity token is a bearer token
    and can be used by any User Agent in posession of the token.  Bearer
@@ -86,7 +86,51 @@ Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
    was issued.  The Relying Party can confirm this verifier via the User
    Agent, thereby protecting against token export attacks.
 
-2.  Normative References
+2.  Cross-Origin Token Confirmation Representation
+
+   This specification defines the new JWT Confirmation Method [RFC7800]
+   member cov (cross-origin verifier) and coi (cross-origin verifier
+   ID).  The value of the cov member is the verifier that MUST be
+   obtained via the User Agent for the token to be confirmed.  The value
+   of the coi member is an identifer for the verifier, and allows
+   identification of a specific verifier in scenarios where multiple
+   verifiers are in use.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hanson                  Expires October 27, 2017                [Page 2]
+
+Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
+
+
+   The following example demonstrates the JWT Claims Set of an ID Token
+   containing a verifier as the value of the cov (cross-origin verifier)
+   element in the cnf (confirmation) claim:
+
+   {
+      "iss": "https://server.example.com",
+      "sub": "0f6LkoE3KsPyxQ",
+      "aud": "0d8f597e-bc45-46b2-97cf-043c88aa5ecc",
+      "iat": 1467151051,
+      "exp": 1467151651,
+      "nonce": "1KjVsFnQRd4V2XC6",
+      "cnf":{
+        "coi": "53cc28d9-10b0-4e47-b802-6b40fe93adad"
+       }
+   }
+
+3.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -102,19 +146,29 @@ Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
               RFC 6749, DOI 10.17487/RFC6749, October 2012,
               <http://www.rfc-editor.org/info/rfc6749>.
 
+   [RFC7800]  Jones, M., Bradley, J., and H. Tschofenig, "Proof-of-
+              Possession Key Semantics for JSON Web Tokens (JWTs)",
+              RFC 7800, DOI 10.17487/RFC7800, April 2016,
+              <http://www.rfc-editor.org/info/rfc7800>.
+
    [I-D.ietf-oauth-discovery]
               Jones, M., Sakimura, N., and J. Bradley, "OAuth 2.0
               Authorization Server Metadata", draft-ietf-oauth-
               discovery-05 (work in progress), January 2017.
 
+Author's Address
 
 
-Hanson                  Expires October 27, 2017                [Page 2]
+
+
+
+
+
+
+Hanson                  Expires October 27, 2017                [Page 3]
 
 Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
 
-
-Author's Address
 
    Jared Hanson
    Auth0 Inc.
@@ -165,4 +219,6 @@ Author's Address
 
 
 
-Hanson                  Expires October 27, 2017                [Page 3]
+
+
+Hanson                  Expires October 27, 2017                [Page 4]
