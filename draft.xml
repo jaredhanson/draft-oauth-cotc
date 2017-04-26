@@ -85,6 +85,7 @@
   "exp": 1467151651,
   "nonce": "1KjVsFnQRd4V2XC6",
   "cnf":{
+    "cov": "0zWb6JxHJS0eho6zKa8Kcg",
     "coi": "53cc28d9-10b0-4e47-b802-6b40fe93adad"
   }
 }
@@ -119,23 +120,107 @@
             Token Provider's cross-origin verification iframe endpoint.
           </t>
           <t>
-            The page rendered by the Relying Party posts a message to the
-            Identity Provider's cross-origin verification iframe requesting
+            The page rendered by the Token Consumer posts a message to the
+            Token Provider's cross-origin verification iframe requesting
             the verifier.
           </t>
           <t>
-            The Identity Provider's cross-origin verification iframe posts a
-            message to the Relying Party page which contains the verifier.
+            The Token Provider's cross-origin verification iframe posts a
+            message to the Token Consumer page which contains the verifier.
           </t>
           <t>
-            The Relying Party submits the verifier to its confirmation endpoint.
+            The Token Consumer submits the verifier to its confirmation endpoint.
           </t>
           <t>
-            The Relying Party confirms the verifier, and if confirmed continues
+            The Token Consumer confirms the verifier, and if confirmed continues
             processing the operation requested using the security token.
           </t>
         </list>
       </t>
+      
+      <section title="Verifier Request">
+        <t>
+          The Token Consumer requests the verifier by embedding the Token
+          Provider's cross-origin verification iframe into a page, so that it
+          can run in the Token Provider's security context.
+        </t>
+        <figure>
+          <preamble>
+            Following is non-normative example code for the Token Consumer page:
+          </preamble>
+          <artwork><![CDATA[
+var iframeURL = 'https://server.example.com/co/verify#origin=https://client.example.org';
+var targetOrigin = 'https://server.example.com';
+var id = '53cc28d9-10b0-4e47-b802-6b40fe93adad';
+          
+window.addEventListener('message', function(evt) {
+  switch (evt.data.type) {
+  case 'ready':
+    evt.source.postMessage({ type: 'co_verifier_request', request: { id: id } }, targetOrigin);
+    break;
+
+  case 'co_verifier_response':
+    if (evt.data.response && evt.data.response.verifier) {
+      var node = document.createElement('input');
+      node.setAttribute('type', 'hidden');
+      node.setAttribute('name', 'verifier');
+      node.setAttribute('value', evt.data.response.verifier);
+      document.forms[0].appendChild(node);
+    }
+    document.forms[0].submit();
+    break;
+  }
+});
+
+node = document.createElement('iframe');
+node.setAttribute('src', iframeURL);
+document.body.appendChild(node);
+]]></artwork>
+        </figure>
+      </section>
+      
+      <section title="Verifier Response">
+        <t>
+          The Token Provider responds with the verifier.
+        </t>
+        <figure>
+          <preamble>
+            Following is non-normative example code for the Token Provider
+            cross-origin verification iframe:
+          </preamble>
+          <artwork><![CDATA[
+function getFragment(name) {
+  var value = "&" + window.location.hash.substring(1);
+  var parts = value.split("&" + name + "=");
+  if (parts.length == 2) return parts.pop().split("&").shift();
+}
+
+var targetOrigin = decodeURIComponent(getFragment('origin'));
+
+window.addEventListener('message', function(evt) {
+  switch (evt.data.type) {
+  case 'co_verifier_request':
+    var key = [ 'co/verifier',
+      encodeURIComponent(evt.origin),
+      encodeURIComponent(evt.data.request.id)
+    ].join('/');
+    var verifier = sessionStorage.getItem(key);
+    sessionStorage.removeItem(key)
+    
+    event.source.postMessage({
+      type: 'co_verifier_response',
+      response: {
+        verifier: verifier
+      }
+    }, evt.origin);
+    break;
+  }
+});
+
+window.parent.postMessage({ type: 'ready' }, targetOrigin);
+]]></artwork>
+        </figure>
+      </section>
       
     </section>
     

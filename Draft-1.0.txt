@@ -126,6 +126,7 @@ Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
      "exp": 1467151651,
      "nonce": "1KjVsFnQRd4V2XC6",
      "cnf":{
+       "cov": "0zWb6JxHJS0eho6zKa8Kcg",
        "coi": "53cc28d9-10b0-4e47-b802-6b40fe93adad"
      }
    }
@@ -151,16 +152,15 @@ Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
    o  The Token Consumer renders a page an invisible iframe from the
       Token Provider's cross-origin verification iframe endpoint.
 
-   o  The page rendered by the Relying Party posts a message to the
-      Identity Provider's cross-origin verification iframe requesting
-      the verifier.
+   o  The page rendered by the Token Consumer posts a message to the
+      Token Provider's cross-origin verification iframe requesting the
+      verifier.
 
-   o  The Identity Provider's cross-origin verification iframe posts a
-      message to the Relying Party page which contains the verifier.
+   o  The Token Provider's cross-origin verification iframe posts a
+      message to the Token Consumer page which contains the verifier.
 
-   o  The Relying Party submits the verifier to its confirmation
+   o  The Token Consumer submits the verifier to its confirmation
       endpoint.
-
 
 
 
@@ -170,9 +170,94 @@ Hanson                  Expires October 27, 2017                [Page 3]
 Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
 
 
-   o  The Relying Party confirms the verifier, and if confirmed
+   o  The Token Consumer confirms the verifier, and if confirmed
       continues processing the operation requested using the security
       token.
+
+3.1.  Verifier Request
+
+   The Token Consumer requests the verifier by embedding the Token
+   Provider's cross-origin verification iframe into a page, so that it
+   can run in the Token Provider's security context.
+
+   Following is non-normative example code for the Token Consumer page:
+
+var iframeURL = 'https://server.example.com/co/verify#origin=https://client.example.org';
+var targetOrigin = 'https://server.example.com';
+var id = '53cc28d9-10b0-4e47-b802-6b40fe93adad';
+
+window.addEventListener('message', function(evt) {
+  switch (evt.data.type) {
+  case 'ready':
+    evt.source.postMessage({ type: 'co_verifier_request', request: { id: id } }, targetOrigin);
+    break;
+
+  case 'co_verifier_response':
+    if (evt.data.response && evt.data.response.verifier) {
+      var node = document.createElement('input');
+      node.setAttribute('type', 'hidden');
+      node.setAttribute('name', 'verifier');
+      node.setAttribute('value', evt.data.response.verifier);
+      document.forms[0].appendChild(node);
+    }
+    document.forms[0].submit();
+    break;
+  }
+});
+
+node = document.createElement('iframe');
+node.setAttribute('src', iframeURL);
+document.body.appendChild(node);
+
+3.2.  Verifier Response
+
+   The Token Provider responds with the verifier.
+
+
+
+
+
+
+
+
+
+Hanson                  Expires October 27, 2017                [Page 4]
+
+Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
+
+
+   Following is non-normative example code for the Token Provider cross-
+   origin verification iframe:
+
+   function getFragment(name) {
+     var value = "&" + window.location.hash.substring(1);
+     var parts = value.split("&" + name + "=");
+     if (parts.length == 2) return parts.pop().split("&").shift();
+   }
+
+   var targetOrigin = decodeURIComponent(getFragment('origin'));
+
+   window.addEventListener('message', function(evt) {
+     switch (evt.data.type) {
+     case 'co_verifier_request':
+       var key = [ 'co/verifier',
+         encodeURIComponent(evt.origin),
+         encodeURIComponent(evt.data.request.id)
+       ].join('/');
+       var verifier = sessionStorage.getItem(key);
+       sessionStorage.removeItem(key)
+
+       event.source.postMessage({
+         type: 'co_verifier_response',
+         response: {
+           verifier: verifier
+         }
+       }, evt.origin);
+       break;
+     }
+   });
+
+   window.parent.postMessage({ type: 'ready' }, targetOrigin);
 
 4.  Normative References
 
@@ -189,6 +274,13 @@ Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
    [RFC6749]  Hardt, D., Ed., "The OAuth 2.0 Authorization Framework",
               RFC 6749, DOI 10.17487/RFC6749, October 2012,
               <http://www.rfc-editor.org/info/rfc6749>.
+
+
+
+Hanson                  Expires October 27, 2017                [Page 5]
+
+Internet-Draft  OAuth 2.0 Cross-Origin Token Confirmation     April 2017
+
 
    [RFC7800]  Jones, M., Bradley, J., and H. Tschofenig, "Proof-of-
               Possession Key Semantics for JSON Web Tokens (JWTs)",
@@ -221,4 +313,24 @@ Author's Address
 
 
 
-Hanson                  Expires October 27, 2017                [Page 4]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hanson                  Expires October 27, 2017                [Page 6]
